@@ -1,0 +1,71 @@
+﻿@model List<Super_Duper_Library.Models.BooksVM>
+@using Super_Duper_Library.Models
+@{
+    ViewBag.Title = "Books";
+}
+
+<h1>Books</h1>
+
+@{
+                List<string> authors = DBDataService.GetAuthors().Select(a => a.surname).ToList();
+                List<string> types = DBDataService.GetTypes().Select(a => a.name).ToList();
+
+                using (Html.BeginForm("Books", "Books", FormMethod.Post))
+                {
+        <div class="row">
+            <div class="col-md-4">
+                @Html.TextBox("bookName", "", new { @class = "form-control" })
+            </div>
+            <div class="col-md-3">
+                @Html.DropDownList("typeName", new SelectList(types), "Select Type Name", new { @class = "form-control" })
+            </div>
+            <div class="col-md-3">
+                @Html.DropDownList("authorName", new SelectList(authors), "Select Author Name", new { @class = "form-control" })
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn-success">Search</button>
+            </div>
+            <div class="col-md-1">
+                @Html.ActionLink("Clear", "homeClear", "Books", null, new { @class = "btn btn-danger" })
+            </div>
+        </div>
+}
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Author</th>
+            <th>Type</th>
+            <th>Page Count</th>
+            <th>Points</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+            <tr>
+                <td style="text-align:left">@book.book.bookID</td>
+                <td style="text-align:left">@book.book.name</td>
+                <td style="text-align:left">@book.author.surname</td>
+                <td style="text-align:left">@book.type.name</td>
+                <td style="text-align:left">@book.book.pageCount</td>
+                <td style="text-align:left">@book.book.point</td>
+                <td style="text-align:left">@book.status</td>
+                <td style="text-align:left">
+                    @Html.ActionLink("View", "BookDetails", "Books", new { bookID = book.book.bookID }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function ClearBooks(){
+        document.getElementsByName("bookName").value = null;
+
+    }
+</script>

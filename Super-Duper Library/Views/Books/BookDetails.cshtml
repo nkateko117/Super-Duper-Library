@@ -1,0 +1,42 @@
+﻿@model Super_Duper_Library.Models.bookDetailsVM
+@using Super_Duper_Library.Models
+@{
+    ViewBag.Title = "BookDetails";
+}
+
+<h1>@Model.book.name - @ViewBag.Message</h1>
+<br />
+
+<div class="row">
+    <h2 class="col-md-10"># borrows - @Model.borrows.Count</h2>
+    <div class="col-md-1">
+        @Html.ActionLink("View Students", "ViewStudents", "Books", new { bookID = Model.book.bookID }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Taken Date</th>
+            <th>Brought Date</th>
+            <th>Borrowed By</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var borrow in Model.borrows)
+        {
+        <tr>
+            <td style="text-align:left">@borrow.borrowsID</td>
+            <td style="text-align:left">@borrow.takeDate</td>
+            <td style="text-align:left">@borrow.broughtDate</td>
+            <td style="text-align:left">
+                @Super_Duper_Library.Models.DBDataService.GetStudents().Where(a => a.studentID == borrow.studentID).FirstOrDefault().name
+                @Super_Duper_Library.Models.DBDataService.GetStudents().Where(a => a.studentID == borrow.studentID).FirstOrDefault().surname
+            </td>
+        </tr>
+                }
+            
+        </tbody>
+</table>

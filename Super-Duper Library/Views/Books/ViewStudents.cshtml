@@ -1,0 +1,82 @@
+﻿@model Super_Duper_Library.Models.StudentsVM
+@using Super_Duper_Library.Models
+@{
+    ViewBag.Title = "ViewStudents";
+}
+
+<h2>Students</h2>
+@{
+                List<string> classes = DBDataService.GetStudents().Select(a => a.Class).ToList();
+
+                using (Html.BeginForm("ViewStudents", "Books", FormMethod.Post))
+                {
+        <div class="row">
+            <div class="col-md-4">
+                @Html.TextBox("studentName", "", new { @class = "form-control" })
+            </div>
+            <div class="col-md-3">
+                @Html.DropDownList("className", new SelectList(classes), "Select Class", new { @class = "form-control" })
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn-success">Search</button>
+            </div>
+            <div class="col-md-1">
+                @Html.ActionLink("Clear", "studentClear", "Books", new { bookID = Model.book.bookID}, new { @class = "btn btn-danger" })
+                @Html.Hidden("bookID", Model.book.bookID)
+            </div>
+        </div>
+    }
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Class</th>
+            <th>Points</th>
+            @if (Model.book.status == "Out")
+            {
+                <th>Return Book</th>
+            }
+            @if (Model.book.status == "Available")
+            {
+                <th>Borrow Book</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            Borrows borrow = null;
+            if (Model.book.status == "Out")
+            {
+                borrow = DBDataService.GetBorrows().Where(a => a.bookID == Model.book.bookID).Where(b => b.broughtDate.ToString() == "1900/01/01 00:00:00").FirstOrDefault();
+            }
+
+            foreach (var student in Model.students)
+            {
+                <tr>
+                    <td>@student.studentID</td>
+                    <td>@student.name</td>
+                    <td>@student.surname</td>
+                    <td>@student.Class</td>
+                    <td>@student.point</td>
+                    @if (Model.book.status == "Out" && student.studentID == borrow.studentID)
+                    {
+                        <td>
+                            @Html.ActionLink("Return Book", "DoReturnBook", "Books", new { borrowID = borrow.borrowsID }, new { @class = "btn btn-primary" })
+                        </td>
+                    }
+                    @if (Model.book.status == "Available")
+                    {
+                        <td>
+                            @Html.ActionLink("Borrow Book", "DoBorrowBook", "Books", new { bookID = Model.book.bookID, studentID = student.studentID }, new { @class = "btn btn-primary" })
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    </tbody>
+
+</table>
